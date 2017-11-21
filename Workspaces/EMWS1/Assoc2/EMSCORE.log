@@ -1,0 +1,102 @@
+*------------------------------------------------------------*
+* Score Log
+Date:                November 21, 2017
+Time:                19:25:08
+*------------------------------------------------------------*
+11690  *------------------------------------------------------------*;
+11691  * Assoc2: Scoring DATA data;
+11692  *------------------------------------------------------------*;
+11693  data EMWS1.Assoc2_TRANSACTION
+11694  / view=EMWS1.Assoc2_TRANSACTION
+11695  ;
+11696  set EMWS1.Ids2_DATA
+11697  ;
+11698  run;
+
+NOTE: DATA STEP view saved on file EMWS1.ASSOC2_TRANSACTION.
+NOTE: A stored DATA STEP view cannot run under a different operating system.
+NOTE: View EMWS1.IDS2_DATA.VIEW used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+      
+
+11699  quit;
+
+11700  *------------------------------------------------------------*;
+11701  * Assoc2: Computing metadata for TRANSACTION data;
+11702  *------------------------------------------------------------*;
+
+NOTE: View EMWS1.ASSOC2_TRANSACTION.VIEW used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+12034  data EMWS1.Assoc2_EMINFO;
+12035  length TARGET KEY $32 DATA $43;
+12036  TARGET='';
+12037  KEY='ASSOCIATION';
+12038  DATA="Assoc2";
+12039  output;
+12040  run;
+
+NOTE: The data set EMWS1.ASSOC2_EMINFO has 1 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+12041  proc sort data = EMWS1.Ids2_EMINFO OUT=WORK.SORTEDEMINFO NOTHREADS;
+12042  by TARGET KEY;
+12043  run;
+
+NOTE: There were 1 observations read from the data set EMWS1.IDS2_EMINFO.
+NOTE: The data set WORK.SORTEDEMINFO has 1 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+12044  proc sort data = EMWS1.Assoc2_EMINFO OUT=WORK.TEMP_INFO NOTHREADS;
+12045  by TARGET KEY;
+12046  run;
+
+NOTE: There were 1 observations read from the data set EMWS1.ASSOC2_EMINFO.
+NOTE: The data set WORK.TEMP_INFO has 1 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+12047  data EMWS1.Assoc2_EMINFO;
+12048  merge WORK.SORTEDEMINFO WORK.TEMP_INFO;
+12049  by TARGET KEY;
+12050  run;
+
+NOTE: There were 1 observations read from the data set WORK.SORTEDEMINFO.
+NOTE: There were 1 observations read from the data set WORK.TEMP_INFO.
+NOTE: The data set EMWS1.ASSOC2_EMINFO has 2 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+12051  proc datasets lib=work nolist;
+12052  delete TEMP_INFO SORTEDEMINFO;
+12053  run;
+
+NOTE: Deleting WORK.TEMP_INFO (memtype=DATA).
+NOTE: Deleting WORK.SORTEDEMINFO (memtype=DATA).
+12054  quit;
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: View EMWS1.ASSOC2_TRANSACTION.VIEW used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      

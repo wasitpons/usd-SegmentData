@@ -1,0 +1,76 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Variable Summary
+
+            Measurement    Frequency
+Role           Level         Count
+
+ID           INTERVAL          1    
+SEQUENCE     INTERVAL          1    
+TARGET       NOMINAL           1    
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Sequence Report
+
+                                                                                                                                                         Right
+   Chain    Transaction    Support    Confidence    Pseudo                                   Chain     Chain     Chain      Rule    Left Hand           Hand of
+  Length       Count         (%)         (%)         Lift     Rule                           Item 1    Item 2    Item 3    Index    of Rule              Rule
+
+       2         4329       54.17        63.15        1.02    CKING ==> SVG                  CKING     SVG                    1     CKING               SVG    
+       2         2892       36.19        42.19        1.10    CKING ==> ATM                  CKING     ATM                    2     CKING               ATM    
+       2         2053       25.69        41.53        1.08    SVG ==> ATM                    SVG       ATM                    3     SVG                 ATM    
+       3         1986       24.85        45.88        1.19    CKING ==> SVG ==> ATM          CKING     SVG       ATM          4     CKING ==> SVG       ATM    
+       2         1709       21.39        55.61        1.45    ATM ==> ATM                    ATM       ATM                    5     ATM                 ATM    
+       2         1677       20.99        24.46        1.00    CKING ==> CD                   CKING     CD                     6     CKING               CD     
+       3         1546       19.35        53.46        1.39    CKING ==> ATM ==> ATM          CKING     ATM       ATM          7     CKING ==> ATM       ATM    
+       2         1316       16.47        19.20        1.17    CKING ==> HMEQLC               CKING     HMEQLC                 8     CKING               HMEQLC 
+       2         1256       15.72        25.40        1.04    SVG ==> CD                     SVG       CD                     9     SVG                 CD     
+       2         1245       15.58        18.16        1.04    CKING ==> MMDA                 CKING     MMDA                  10     CKING               MMDA   
+       2         1187       14.85        17.32        1.12    CKING ==> CCRD                 CKING     CCRD                  11     CKING               CCRD   
+       3         1139       14.25        26.31        1.07    CKING ==> SVG ==> CD           CKING     SVG       CD          12     CKING ==> SVG       CD     
+       3         1094       13.69        53.29        1.39    SVG ==> ATM ==> ATM            SVG       ATM       ATM         13     SVG ==> ATM         ATM    
+       2         1085       13.58        21.95        0.35    SVG ==> SVG                    SVG       SVG                   14     SVG                 SVG    
+       2          903       11.30       100.00        8.85    CKCRD ==> CKCRD                CKCRD     CKCRD                 16     CKCRD               CKCRD  
+       2          903       11.30        13.17        1.17    CKING ==> CKCRD                CKING     CKCRD                 15     CKING               CKCRD  
+       3          903       11.30       100.00        8.85    CKING ==> CKCRD ==> CKCRD      CKING     CKCRD     CKCRD       17     CKING ==> CKCRD     CKCRD  
+       2          891       11.15        18.02        1.09    SVG ==> HMEQLC                 SVG       HMEQLC                18     SVG                 HMEQLC 
+       3          891       11.15        20.58        1.25    CKING ==> SVG ==> HMEQLC       CKING     SVG       HMEQLC      19     CKING ==> SVG       HMEQLC 
+       2          817       10.22        16.53        1.07    SVG ==> CCRD                   SVG       CCRD                  20     SVG                 CCRD   
+       3          798        9.99        18.43        1.19    CKING ==> SVG ==> CCRD         CKING     SVG       CCRD        21     CKING ==> SVG       CCRD   
+       2          736        9.21        37.55        1.53    CD ==> CD                      CD        CD                    22     CD                  CD     
+       2          705        8.82        10.28        0.95    CKING ==> IRA                  CKING     IRA                   23     CKING               IRA    
+       2          704        8.81        53.50        3.25    HMEQLC ==> HMEQLC              HMEQLC    HMEQLC                24     HMEQLC              HMEQLC 
+       3          704        8.81        53.50        3.25    CKING ==> HMEQLC ==> HMEQLC    CKING     HMEQLC    HMEQLC      25     CKING ==> HMEQLC    HMEQLC 
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Rule Statistics
+
+The MEANS Procedure
+
+Variable    Label                     Minimum         Maximum            Mean
+-----------------------------------------------------------------------------
+NITEMS      Chain Length            2.0000000       3.0000000       2.5815603
+COUNT       Transaction Count     160.0000000         4329.00     511.0141844
+SUPPORT     Support(%)              2.0022525      54.1734451       6.3948715
+CONF        Confidence(%)           4.9352751     100.0000000      33.0595668
+-----------------------------------------------------------------------------
+ 
+                                                                                                                                                                                                                                                                
+ 
+Sequence Report
+
+The FREQ Procedure
+
+                        Chain Length
+ 
+                                   Cumulative    Cumulative
+NITEMS    Frequency     Percent     Frequency      Percent
+-----------------------------------------------------------
+     2          59       41.84            59        41.84  
+     3          82       58.16           141       100.00  

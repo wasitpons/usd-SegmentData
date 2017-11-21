@@ -1,0 +1,544 @@
+*------------------------------------------------------------*
+User:                5981538926
+Date:                November 21, 2017
+Time:                19:25:09
+Site:                12400081
+Platform:            X64_81PRO
+Maintenance Release: 9.04.01M4P110916
+EM Version:          14.2
+* 
+*------------------------------------------------------------*
+* Training Log
+Date:                November 21, 2017
+Time:                19:25:05
+*------------------------------------------------------------*
+11406  proc freq data=EMWS1.Assoc2_VariableSet noprint;
+11407  table ROLE*LEVEL/out=WORK.Assoc2META;
+11408  run;
+ 
+NOTE: There were 3 observations read from the data set EMWS1.ASSOC2_VARIABLESET.
+NOTE: The data set WORK.ASSOC2META has 3 observations and 4 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11409  proc print data=WORK.Assoc2META label noobs;
+11410  var ROLE LEVEL COUNT;
+11411  label ROLE = "%sysfunc(sasmsg(sashelp.dmine, meta_role_vlabel, NOQUOTE))" LEVEL = "%sysfunc(sasmsg(sashelp.dmine, meta_level_vlabel, NOQUOTE))" COUNT = "%sysfunc(sasmsg(sashelp.dmine, rpt_count_vlabel, NOQUOTE))";
+11412  title9 ' ';
+11413  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_varSummary_title  , NOQUOTE))";
+11414  run;
+ 
+NOTE: There were 3 observations read from the data set WORK.ASSOC2META.
+NOTE: The PROCEDURE PRINT printed page 1.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11415  title10;
+ 
+11423  *------------------------------------------------------------*;
+11424  * Assoc2: Sorting Training Data;
+11425  *------------------------------------------------------------*;
+11426  proc sort data=EMWS1.Ids2_DATA(keep=VISIT SERVICE ACCOUNT) out=WORK.SORTEDTRAIN;
+11427  by ACCOUNT VISIT;
+11428  run;
+ 
+NOTE: There were 32367 observations read from the data set EMWS1.IDS2_DATA.
+NOTE: View EMWS1.IDS2_DATA.VIEW used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.06 seconds
+ 
+NOTE: There were 32367 observations read from the data set MYDATA.BANK.
+NOTE: The data set WORK.SORTEDTRAIN has 32367 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+ 
+ 
+11429  *------------------------------------------------------------* ;
+11430  * EM: DMDBClass Macro ;
+11431  *------------------------------------------------------------* ;
+11432  %macro DMDBClass;
+11433      SERVICE(DESC)
+11434  %mend DMDBClass;
+11435  *------------------------------------------------------------* ;
+11436  * EM: DMDBVar Macro ;
+11437  *------------------------------------------------------------* ;
+11438  %macro DMDBVar;
+11439      VISIT
+11440  %mend DMDBVar;
+11441  *------------------------------------------------------------*;
+11442  * EM: Create DMDB;
+11443  *------------------------------------------------------------*;
+11444  proc dmdb batch data=WORK.SORTEDTRAIN
+11445  dmdbcat=WORK.EM_DMDB
+11446  maxlevel = 100001
+11447  normlen= 256
+11448  out=WORK.EM_DMDB
+11449  ;
+11450  id
+11451  ACCOUNT
+11452  ;
+11453  class %DMDBClass;
+11454  var %DMDBVar;
+11455  target
+11456  SERVICE
+11457  ;
+11458  run;
+ 
+NOTE: Records processed = 32367   Memory used = 511K.
+NOTE: There were 32367 observations read from the data set WORK.SORTEDTRAIN.
+NOTE: The data set WORK.EM_DMDB has 32367 observations and 3 variables.
+NOTE: PROCEDURE DMDB used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11459  quit;
+ 
+number_of_elements=1
+number_of_elements=1
+11460  options nocleanup;
+11461  proc assoc dmdb dmdbcat=WORK.EM_DMDB out=EMWS1.Assoc2_ASSOC data=WORK.EM_DMDB
+11462  pctsup = 5
+11463  items=4
+11464  ;
+11465  customer
+11466  ACCOUNT
+11467  ;
+11468  target
+11469  SERVICE
+11470  ;
+11471  run;
+ 
+ 
+----- Potential 1 item sets = 13 -----
+Counting items, records read:    32367
+Number of customers:              7991
+Support level for item sets:       342
+Maximum count for a set:          6855
+Sets meeting support level:         12
+Megs of memory used:              0.51
+ 
+----- Potential 2 item sets = 66 -----
+Counting items, records read:    32367
+Maximum count for a set:          4329
+Sets meeting support level:         28
+Megs of memory used:              0.51
+ 
+----- Potential 3 item sets = 27 -----
+Counting items, records read:    32367
+Maximum count for a set:          1986
+Sets meeting support level:         19
+Megs of memory used:              0.51
+ 
+----- Potential 4 item sets = 2 -----
+Counting items, records read:    32367
+Maximum count for a set:           487
+Sets meeting support level:          2
+Megs of memory used:              0.51
+NOTE: The data set EMWS1.ASSOC2_ASSOC has 62 observations and 6 variables.
+NOTE: PROCEDURE ASSOC used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11472  quit;
+11473
+11474
+ 
+Consolidate Time (SAME) and Maximum Duration (WINDOW) options have been reset.
+SAME must be greater than WINDOW.
+11475  proc sequence data=WORK.EM_DMDB dmdbcat=WORK.EM_DMDB assoc=EMWS1.Assoc2_ASSOC out=EMWS1.Assoc2_SEQUENCE nitems = 3
+11476  pctsup = 2;
+11477  customer ACCOUNT;
+11478  target SERVICE;
+11479  visit VISIT
+11480  ;
+11481  run;
+ 
+Large itemsets:              61
+Total records read:       32367
+Customer count:            7991
+Support set to:             159
+Total sequences formed:       77
+Number >= support            59
+--- Number Items:         3 ---
+Total records read:       32367
+Customer count:            7991
+Total Litem Sequences:      229
+Number >= support            82
+Memory allocated megs:        7
+NOTE: The data set EMWS1.ASSOC2_SEQUENCE has 141 observations and 9 variables.
+NOTE: PROCEDURE SEQUENCE used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11482  quit;
+11483
+ 
+11484  *------------------------------------------------------------*;
+11485  * Assoc2: Selecting rules;
+11486  *------------------------------------------------------------*;
+11487  proc sort data=EMWS1.Assoc2_SEQUENCE;
+11488  by descending SUPPORT;
+11489  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_SEQUENCE.
+NOTE: The data set EMWS1.ASSOC2_SEQUENCE has 141 observations and 9 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11490  data WORK.ASSOCSUBSET;
+11491  set EMWS1.Assoc2_SEQUENCE(obs=141);
+11492  index=_N_;
+11493  label index = "%sysfunc(sasmsg(sashelp.dmine, rpt_ruleIndex_vlabel,  NOQUOTE))";
+11494  label _LHAND = "%sysfunc(sasmsg(sashelp.dmine, rpt_leftHandSide_vlabel,  NOQUOTE))";
+11495  label _RHAND = "%sysfunc(sasmsg(sashelp.dmine, rpt_rightHandSide_vlabel,  NOQUOTE))";
+11496  run;
+ 
+NOTE: Variable _LHAND is uninitialized.
+NOTE: Variable _RHAND is uninitialized.
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_SEQUENCE.
+NOTE: The data set WORK.ASSOCSUBSET has 141 observations and 10 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11497  *------------------------------------------------------------*;
+11498  * Assoc2: Creating Links and Nodes data sets;
+11499  *------------------------------------------------------------*;
+11500  data EMWS1.Assoc2_LINKS(rename=(ISET1=FROM ISET2=TO)) left(keep=ISET1 rename=(ISET1=ITEM)) right(keep=ISET2 rename=(ISET2=ITEM));
+11501  label ISET1= "%sysfunc(sasmsg(sashelp.dmine, rpt_from_vlabel ,          NOQUOTE))" ISET2= "%sysfunc(sasmsg(sashelp.dmine, rpt_to_vlabel,             NOQUOTE))";
+11502  set WORK.ASSOCSUBSET;
+11503  keep LINKID COUNT SUPPORT CONF ISET1 ISET2;
+11504  label LINKID = "%sysfunc(sasmsg(sashelp.dmine, rpt_varclus_label_linkid , NOQUOTE))";
+11505  LINKID = _N_;
+11506  run;
+ 
+NOTE: There were 141 observations read from the data set WORK.ASSOCSUBSET.
+NOTE: The data set EMWS1.ASSOC2_LINKS has 141 observations and 6 variables.
+NOTE: The data set WORK.LEFT has 141 observations and 1 variables.
+NOTE: The data set WORK.RIGHT has 141 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11507  data WORK.ASSOCTEMP;
+11508  set left right;
+11509  where ITEM ne '';
+11510  run;
+ 
+NOTE: There were 141 observations read from the data set WORK.LEFT.
+      WHERE ITEM not = ' ';
+NOTE: There were 141 observations read from the data set WORK.RIGHT.
+      WHERE ITEM not = ' ';
+NOTE: The data set WORK.ASSOCTEMP has 282 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11511  proc sort data=WORK.ASSOCTEMP nodup;
+11512  by ITEM;
+11513  run;
+ 
+NOTE: There were 282 observations read from the data set WORK.ASSOCTEMP.
+NOTE: 270 duplicate observations were deleted.
+NOTE: The data set WORK.ASSOCTEMP has 12 observations and 1 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11514  data WORK.ITEMS (keep = ITEM COUNT);
+11515  set EMWS1.Assoc2_ASSOC;
+11516  where set_size=1;
+11517  ITEM= ITEM1;
+11518  run;
+ 
+NOTE: There were 12 observations read from the data set EMWS1.ASSOC2_ASSOC.
+      WHERE set_size=1;
+NOTE: The data set WORK.ITEMS has 12 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11519  proc sort data=WORK.ITEMS;
+11520  by ITEM;
+11521  run;
+ 
+NOTE: There were 12 observations read from the data set WORK.ITEMS.
+NOTE: The data set WORK.ITEMS has 12 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11522  data EMWS1.Assoc2_NODES;
+11523  merge WORK.ASSOCTEMP(in=a) WORK.ITEMS;
+11524  by ITEM;
+11525  if a then output;
+11526  run;
+ 
+NOTE: There were 12 observations read from the data set WORK.ASSOCTEMP.
+NOTE: There were 12 observations read from the data set WORK.ITEMS.
+NOTE: The data set EMWS1.ASSOC2_NODES has 12 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11527  data EMWS1.Assoc2_NODES;
+11528  set EMWS1.Assoc2_NODES;
+11529  if COUNT=. then COUNT=-1;
+11530  label ITEM = "%sysfunc(sasmsg(sashelp.dmine, rpt_item_vlabel ,     NOQUOTE))" COUNT = "%sysfunc(sasmsg(sashelp.dmine, rpt_count_vlabel ,    NOQUOTE))";
+11531  run;
+ 
+NOTE: There were 12 observations read from the data set EMWS1.ASSOC2_NODES.
+NOTE: The data set EMWS1.ASSOC2_NODES has 12 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11532  *------------------------------------------------------------*;
+11533  * Assoc2: Creating Rules data set;
+11534  *------------------------------------------------------------*;
+11535  proc sort data=WORK.ASSOCSUBSET out=EMWS1.Assoc2_RULES;
+11536  by descending SUPPORT
+11537  ISET3
+11538  ISET2
+11539  ISET1
+11540  ;
+11541  run;
+ 
+NOTE: There were 141 observations read from the data set WORK.ASSOCSUBSET.
+NOTE: The data set EMWS1.ASSOC2_RULES has 141 observations and 10 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11542  data EMWS1.Assoc2_RULES;
+11543  set EMWS1.Assoc2_RULES;
+11544  length _LHAND _RHAND $39;
+11545  _RHAND = left(reverse(scan(reverse(RULE),1,'>==')));
+11546  ind = index(left(reverse(RULE)),'>==')+4;
+11547  _LHAND = left(reverse(substr(left(reverse(RULE)), ind)));
+11548  label _LHAND = "%sysfunc(sasmsg(sashelp.dmine, rpt_leftHandSide_vlabel,  NOQUOTE))";
+11549  label _RHAND = "%sysfunc(sasmsg(sashelp.dmine, rpt_rightHandSide_vlabel,  NOQUOTE))";
+11550  drop ind;
+11551  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_RULES.
+NOTE: The data set EMWS1.ASSOC2_RULES has 141 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+ 
+ 
+11552  *------------------------------------------------------------*;
+11553  * Assoc2: Marking Rules to Transpose;
+11554  *------------------------------------------------------------*;
+11555  data EMWS1.Assoc2_RULES;
+11556  set EMWS1.Assoc2_RULES;
+11557  label Transpose= "%sysfunc(sasmsg(sashelp.dmine, rpt_transposeRule_vlabel,  NOQUOTE))";
+11558  if _N_ <= 141 then Transpose=1;
+11559  else Transpose=0;
+11560  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_RULES.
+NOTE: The data set EMWS1.ASSOC2_RULES has 141 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11561  %let numtransrules = 0;
+11562  data WORK.RULEID;
+11563  set EMWS1.Assoc2_RULES(where=(transpose=1)) end=eof;
+11564  ruleid = _N_;
+11565  drop transpose;
+11566  if eof then call symput('numtransrules', strip(put(_N_, best.)));
+11567  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_RULES.
+      WHERE transpose=1;
+NOTE: The data set WORK.RULEID has 141 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+ 
+ 
+NOTE: This SAS session is using a registry in WORK.  All changes will be lost at the end of this session.
+11568  proc print data = EMWS1.Assoc2_RULES(drop=Transpose obs=25) noobs label;
+11569  title9 ' ';
+11570  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_sequence_title  , NOQUOTE))";
+11571  run;
+ 
+NOTE: There were 25 observations read from the data set EMWS1.ASSOC2_RULES.
+NOTE: The PROCEDURE PRINT printed page 2.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11572  proc means data=EMWS1.Assoc2_RULES min max mean;
+11573  var nitems count support conf;
+11574  title9 ' ';
+11575  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_ruleStatistics_title  , NOQUOTE))";
+11576  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_RULES.
+NOTE: The PROCEDURE MEANS printed page 3.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11577  proc freq data=EMWS1.Assoc2_RULES;
+11578  table nitems;
+11579  title9;
+11580  title10 "%sysfunc(sasmsg(sashelp.dmine, rpt_sequence_title  , NOQUOTE))";
+11581  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_RULES.
+NOTE: The PROCEDURE FREQ printed page 4.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.00 seconds
+ 
+ 
+11582  title10;
+ 
+11583  data EMWS1.Assoc2_RULEMAP(keep=map rule);
+11584  length map $8;
+11585  label map = "%sysfunc(sasmsg(sashelp.dmine, rpt_map_vlabel,  NOQUOTE))";
+11586  set EMWS1.Assoc2_RULES;
+11587  map = "RULE"!!left(trim(put(_n_, 12.0)));
+11588  run;
+ 
+NOTE: There were 141 observations read from the data set EMWS1.ASSOC2_RULES.
+NOTE: The data set EMWS1.ASSOC2_RULEMAP has 141 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+ 
+ 
+*------------------------------------------------------------*
+* Score Log
+Date:                November 21, 2017
+Time:                19:25:08
+*------------------------------------------------------------*
+11690  *------------------------------------------------------------*;
+11691  * Assoc2: Scoring DATA data;
+11692  *------------------------------------------------------------*;
+11693  data EMWS1.Assoc2_TRANSACTION
+11694  / view=EMWS1.Assoc2_TRANSACTION
+11695  ;
+11696  set EMWS1.Ids2_DATA
+11697  ;
+11698  run;
+ 
+NOTE: DATA STEP view saved on file EMWS1.ASSOC2_TRANSACTION.
+NOTE: A stored DATA STEP view cannot run under a different operating system.
+NOTE: View EMWS1.IDS2_DATA.VIEW used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+ 
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+ 
+ 
+11699  quit;
+ 
+11700  *------------------------------------------------------------*;
+11701  * Assoc2: Computing metadata for TRANSACTION data;
+11702  *------------------------------------------------------------*;
+ 
+NOTE: View EMWS1.ASSOC2_TRANSACTION.VIEW used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+ 
+12034  data EMWS1.Assoc2_EMINFO;
+12035  length TARGET KEY $32 DATA $43;
+12036  TARGET='';
+12037  KEY='ASSOCIATION';
+12038  DATA="Assoc2";
+12039  output;
+12040  run;
+ 
+NOTE: The data set EMWS1.ASSOC2_EMINFO has 1 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+12041  proc sort data = EMWS1.Ids2_EMINFO OUT=WORK.SORTEDEMINFO NOTHREADS;
+12042  by TARGET KEY;
+12043  run;
+ 
+NOTE: There were 1 observations read from the data set EMWS1.IDS2_EMINFO.
+NOTE: The data set WORK.SORTEDEMINFO has 1 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+ 
+ 
+12044  proc sort data = EMWS1.Assoc2_EMINFO OUT=WORK.TEMP_INFO NOTHREADS;
+12045  by TARGET KEY;
+12046  run;
+ 
+NOTE: There were 1 observations read from the data set EMWS1.ASSOC2_EMINFO.
+NOTE: The data set WORK.TEMP_INFO has 1 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+ 
+ 
+12047  data EMWS1.Assoc2_EMINFO;
+12048  merge WORK.SORTEDEMINFO WORK.TEMP_INFO;
+12049  by TARGET KEY;
+12050  run;
+ 
+NOTE: There were 1 observations read from the data set WORK.SORTEDEMINFO.
+NOTE: There were 1 observations read from the data set WORK.TEMP_INFO.
+NOTE: The data set EMWS1.ASSOC2_EMINFO has 2 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+12051  proc datasets lib=work nolist;
+12052  delete TEMP_INFO SORTEDEMINFO;
+12053  run;
+ 
+NOTE: Deleting WORK.TEMP_INFO (memtype=DATA).
+NOTE: Deleting WORK.SORTEDEMINFO (memtype=DATA).
+12054  quit;
+ 
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+ 
+ 
+NOTE: View EMWS1.ASSOC2_TRANSACTION.VIEW used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+ 
+*------------------------------------------------------------*
+* Report Log
+Date:                November 21, 2017
+Time:                19:25:09
+*------------------------------------------------------------*
