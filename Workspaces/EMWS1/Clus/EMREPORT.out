@@ -1,0 +1,13 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Variable Importance
+
+                                         Number of    Number of
+Variable                                 Splitting    Surrogate
+  Name                Label                Rules        Rules      Importance
+
+MeanHHSz    Average Household Size           10           4          1.00000 
+MedHHInc    Median Household Income           6           7          0.92622 
+RegDens     Region Density Percentile         2           6          0.84013 

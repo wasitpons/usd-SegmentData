@@ -1,0 +1,39 @@
+ 
+                                                                                                                                                                                                                                                                
+ 
+Filter Limits for Interval Variables
+(maximum 500 observations printed)
+
+                                                      Keep
+                                           Filter    Missing
+Variable    Role     Minimum    Maximum    Method    Values             Label
+
+MeanHHSz    INPUT      0.01        .       MANUAL       Y       Average Household Size
+ 
+                                                                                                                                                                                                                                                                
+ 
+ 
+Number Of Observations
+
+Data
+Role     Filtered    Excluded     DATA
+
+TRAIN      32097       1081      33178
+ 
+                                                                                                                                                                                                                                                                
+ 
+Statistics for Original and FILTERED Data
+(maximum 500 observations printed)
+
+Data Role=TRAIN Variable=MeanHHSz
+
+Statistics             Original    Filtered
+
+Non Missing            33178.00    32097.00
+Missing                    0.00        0.00
+Minimum                    0.00        0.33
+Maximum                    8.49        8.49
+Mean                       2.50        2.58
+Standard Deviation         0.60        0.39
+Skewness                  -1.89        1.31
+Kurtosis                   9.64       10.34
